@@ -2,5 +2,10 @@
   "backend": "mitie",
   "mitie_file": "./data/total_word_feature_extractor.dat",
   "path" : "./",
-  "data" : "./data/demo-restaurants.json"
+  "data" : "./data/demo-restaurants.json",
+  "server_model_dir": {
+    "one": "./model_1",
+    "two": "./model_2",
+    "three": "./model_3"
+  }
 }
