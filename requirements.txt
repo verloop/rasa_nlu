@@ -9,3 +9,4 @@ pytest-pep8
 requests
 progressbar
 scipy==0.18.1
+wget==3.2
