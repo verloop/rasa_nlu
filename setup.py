@@ -30,7 +30,8 @@ def download_spacy_language_model():
 class MITIEInstallCommand(install):
     """MITIE install"""
     def run(self):
-        download_mitie_feature_files(MITIE_FEATURE_URL)
+        if not os.path.exists(MITIE_FEATURE_LOCAL_PATH):
+            download_mitie_feature_files(MITIE_FEATURE_URL)
         install.run(self)
 
 
