@@ -1,7 +1,6 @@
 from setuptools import setup
 from setuptools.command.install import install
 import os
-import wget
 import tarfile
 import shutil
 import subprocess
@@ -12,6 +11,7 @@ MITIE_FEATURE_LOCAL_PATH = "data/total_word_feature_extractor.dat"
 
 def download_mitie_feature_files(url):
     print("Downloading MITIE model file")
+    import wget
     local_filename = wget.download(url)
 
     tar = tarfile.open(local_filename, "r:bz2")
