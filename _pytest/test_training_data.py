@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
+import os
+import tempfile
+import spacy
+
 from rasa_nlu.training_data import TrainingData
 from rasa_nlu.trainers.mitie_trainer import MITIETrainer
 
 
 def test_luis_mitie():
-    td = TrainingData('data/examples/luis/demo-restaurants.json', 'mitie', 'en')
+    td = TrainingData('data/examples/luis/demo-restaurants.json', 'mitie')
     assert td.fformat == 'luis'
     # some more assertions
 
 
 def test_wit_spacy():
-    td = TrainingData('data/examples/wit/demo-flights.json', 'spacy_sklearn', 'en')
+    nlp = spacy.load('en')
+    td = TrainingData('data/examples/wit/demo-flights.json', 'spacy_sklearn', nlp=nlp)
     assert td.fformat == 'wit'
 
 
@@ -44,17 +49,17 @@ def test_repeated_entities():
     ]
   }
 }"""
-    filename = 'tmp_training_data.json'
-    with open(filename, 'w') as f:
+    with tempfile.NamedTemporaryFile(suffix="_tmp_training_data.json") as f:
         f.write(data.encode("utf-8"))
-    td = TrainingData(filename, 'mitie', 'en')
-    assert len(td.entity_examples) == 1
-    example = td.entity_examples[0]
-    entities = example["entities"]
-    assert len(entities) == 1
-    start, end = MITIETrainer.find_entity(entities[0], example["text"])
-    assert start == 9
-    assert end == 10
+        f.flush()
+        td = TrainingData(f.name, 'mitie', 'en')
+        assert len(td.entity_examples) == 1
+        example = td.entity_examples[0]
+        entities = example["entities"]
+        assert len(entities) == 1
+        start, end = MITIETrainer.find_entity(entities[0], example["text"])
+        assert start == 9
+        assert end == 10
 
 
 def test_multiword_entities():
@@ -77,17 +82,17 @@ def test_multiword_entities():
     ]
   }
 }"""
-    filename = 'tmp_training_data.json'
-    with open(filename, 'w') as f:
+    with tempfile.NamedTemporaryFile(suffix="_tmp_training_data.json") as f:
         f.write(data.encode("utf-8"))
-    td = TrainingData(filename, 'mitie', 'en')
-    assert len(td.entity_examples) == 1
-    example = td.entity_examples[0]
-    entities = example["entities"]
-    assert len(entities) == 1
-    start, end = MITIETrainer.find_entity(entities[0], example["text"])
-    assert start == 4
-    assert end == 7
+        f.flush()
+        td = TrainingData(f.name, 'mitie', 'en')
+        assert len(td.entity_examples) == 1
+        example = td.entity_examples[0]
+        entities = example["entities"]
+        assert len(entities) == 1
+        start, end = MITIETrainer.find_entity(entities[0], example["text"])
+        assert start == 4
+        assert end == 7
 
 
 def test_nonascii_entities():
@@ -108,16 +113,16 @@ def test_nonascii_entities():
     }
   ]
 }"""
-    filename = 'tmp_training_data.json'
-    with open(filename, 'w') as f:
+    with tempfile.NamedTemporaryFile(suffix="_tmp_training_data.json") as f:
         f.write(data.encode("utf-8"))
-    td = TrainingData(filename, 'mitie', 'en')
-    assert len(td.entity_examples) == 1
-    example = td.entity_examples[0]
-    entities = example["entities"]
-    assert len(entities) == 1
-    entity = entities[0]
-    assert entity["value"] == u"ßäæ ?€ö)"
-    assert entity["start"] == 19
-    assert entity["end"] == 27
-    assert entity["entity"] == "description"
+        f.flush()
+        td = TrainingData(f.name, 'mitie', 'en')
+        assert len(td.entity_examples) == 1
+        example = td.entity_examples[0]
+        entities = example["entities"]
+        assert len(entities) == 1
+        entity = entities[0]
+        assert entity["value"] == u"ßäæ ?€ö)"
+        assert entity["start"] == 19
+        assert entity["end"] == 27
+        assert entity["entity"] == "description"

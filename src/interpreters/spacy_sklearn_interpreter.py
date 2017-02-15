@@ -6,6 +6,7 @@ import spacy
 from rasa_nlu import Interpreter
 from rasa_nlu.extractors.spacy_entity_extractor import SpacyEntityExtractor
 from rasa_nlu.featurizers.spacy_featurizer import SpacyFeaturizer
+from rasa_nlu.utils.spacy import ensure_proper_language_model
 
 
 class SpacySklearnInterpreter(Interpreter):
@@ -14,7 +15,9 @@ class SpacySklearnInterpreter(Interpreter):
         self.extractor = None
         self.classifier = None
         self.nlp = spacy.load(language_name, parser=False, entity=False, matcher=False)
-        self.featurizer = SpacyFeaturizer()
+        self.featurizer = SpacyFeaturizer(self.nlp)
+        ensure_proper_language_model(self.nlp)
+
         if intent_classifier:
             with open(intent_classifier, 'rb') as f:
                 self.classifier = cloudpickle.load(f)
@@ -27,7 +30,7 @@ class SpacySklearnInterpreter(Interpreter):
         :param text: text to classify
         :return: tuple of most likely intent name and its probability"""
         if self.classifier:
-            X = self.featurizer.create_bow_vecs([text],nlp=self.nlp)
+            X = self.featurizer.create_bow_vecs([text], nlp=self.nlp)
             intent_ids, probabilities = self.classifier.predict(X)
             intents = self.classifier.transform_labels_num2str(intent_ids)
             intent, score = intents[0], probabilities[0]

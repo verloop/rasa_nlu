@@ -35,3 +35,4 @@ out/
 rasa_nlu_logs.json
 tmp_training_data.json
 .DS_Store
+model_*
